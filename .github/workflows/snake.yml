@@ -5,33 +5,26 @@ on:
   schedule:
     - cron: "0 */2 * * *" 
   
-  # 允许手动触发
+  # 允许手动触发（核心保留）
   workflow_dispatch:
-  
-  # 推送到main分支时触发（重点：把master改成main）
-  push:
-分支:
-    - main
 
 jobs:
   generate:
     permissions: 
-      contents: write  # 解决权限不足问题
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
   
     steps:
-      # 生成贪吃蛇SVG（支持双版本）
       - name: generate github-contribution-grid-snake.svg
         uses: Platane/snk/svg-only@v3
         with:
-          github_user_name: ${{ github.repository_owner }}  # 自动读取你的用户名，不用手动改
+          github_user_name: ${{ github.repository_owner }}
           outputs: |
-            dist/github-contribution-grid-snake.svg          # 亮色版
-            dist/github-contribution-grid-snake-dark.svg?palette=github-dark  # 暗色版（贴合你的溯雪听潮风格）
+            dist/github-contribution-grid-snake.svg
+            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
   
-      # 推送到output分支
-      - name: push github-contribution-grid-snake.svg to the output branch
+      - name: push to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
           target_branch: output
