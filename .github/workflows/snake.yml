@@ -1,37 +1,40 @@
-name: Generate snake
+name: generate animation
+
 on:
+  # 每2小时自动运行
   schedule:
-    - cron: "0 0 * * *" # 每天凌晨自动更新
-  workflow_dispatch: # 允许手动触发
+    - cron: "0 */2 * * *" 
+  
+  # 允许手动触发
+  workflow_dispatch:
+  
+  # 推送到main分支时触发（重点：把master改成main）
+  push:
+分支:
+    - main
 
 jobs:
-  build:
+  generate:
+    permissions: 
+      contents: write  # 解决权限不足问题
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+  
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Generate snake
-        uses: Platane/snk@v2
-        id: snake
+      # 生成贪吃蛇SVG（支持双版本）
+      - name: generate github-contribution-grid-snake.svg
+        uses: Platane/snk/svg-only@v3
         with:
-          github_user_name: cyx0118
-          color: 6fa8dc
-          background: 0d1117
-      
-      - name: Commit and push to output branch
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 切换到 output 分支，如果不存在则创建
-          git checkout -B output
-          
-          # 将生成的 SVG 写入文件
-          echo "${{ steps.snake.outputs.svg }}" > github-contribution-grid-snake.svg
-          
-          # 提交并推送
-          git add github-contribution-grid-snake.svg
-          git commit -m "update snake contribution graph" || exit 0
-          git push -f origin output
+          github_user_name: ${{ github.repository_owner }}  # 自动读取你的用户名，不用手动改
+          outputs: |
+            dist/github-contribution-grid-snake.svg          # 亮色版
+            dist/github-contribution-grid-snake-dark.svg?palette=github-dark  # 暗色版（贴合你的溯雪听潮风格）
+  
+      # 推送到output分支
+      - name: push github-contribution-grid-snake.svg to the output branch
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: output
+          build_dir: dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
