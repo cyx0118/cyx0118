@@ -47,5 +47,5 @@
 </div>
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=cyx0118&label=访客统计&color=6fa8dc&style=flat" alt="访问量">
+  <img src="https://komarev.com/ghpvc/?username=cyx0118&label=Profile%20Views&color=6fa8dc&style=for-the-badge" alt="访问量">
 </p>
